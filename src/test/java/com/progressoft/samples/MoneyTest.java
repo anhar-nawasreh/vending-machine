@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 public class MoneyTest {
- @Test
+/**/ @Test
     public void timesTest() {
         assertThrows(IllegalArgumentException.class, () -> OnePiaster.times(-1));
         assertEquals(Zero, OnePiaster.times(0));
@@ -69,7 +69,7 @@ public class MoneyTest {
         assertEquals(TenDinars.times(7).plus(OneDinar.times(7)), seventySeven);
     }
 
-    @Test
+   @Test
     public void complexTestWithMinusNull() {
         Money oneHundredsFifty = FiftyDinars.times(2)
                 .plus(FiveDinars.times(5))

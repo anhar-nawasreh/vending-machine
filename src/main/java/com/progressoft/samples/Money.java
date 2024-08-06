@@ -3,7 +3,7 @@ package com.progressoft.samples;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class Money {
+public class Money implements Comparable<Money>{
     public static final Money Zero = new Money(0);
     public static final Money OnePiaster = new Money(0.01);
     public static final Money FivePiasters = new Money(0.05);
@@ -18,11 +18,14 @@ public class Money {
 
     private final BigDecimal amount;
 
-    private final Map<Money, Integer> denominationCount = new HashMap<>();
+    private final Map<Money, Integer> denominationCount = new TreeMap<>();
 
 
     private Money(double amount) {
         this.amount = new BigDecimal(amount);
+        denominationCount.put(this, 1);
+
+
     }
 
 
@@ -53,8 +56,9 @@ public class Money {
             throw new IllegalArgumentException("Can't process negative count as " + count);
 
         double moneyAmount = this.getAmount().multiply(BigDecimal.valueOf(count)).doubleValue();
-        denominationCount.put(this, denominationCount.getOrDefault(this, 0) + count);
-        return new Money(moneyAmount, denominationCount);
+        Map <Money, Integer > newDenominationCount = new HashMap<>(denominationCount);
+        newDenominationCount.put(this, denominationCount.getOrDefault(this, 1) * count);
+        return new Money(moneyAmount, newDenominationCount);
 
     }
 
@@ -63,16 +67,15 @@ public class Money {
             throw new IllegalArgumentException("Cant process null parameter");
 
         double moneyAmount = other.getAmount().add(getAmount()).doubleValue();
-        denominationCount.put(other, denominationCount.getOrDefault(other, 0) + 1);
-        denominationCount.put(this, denominationCount.getOrDefault(this, 0) + 1);
-        return new Money(moneyAmount, denominationCount);
+        Map <Money, Integer > newDenominationCount = new HashMap<>(denominationCount);
+        newDenominationCount.putAll(other.denominationCount);
+        return new Money(moneyAmount, newDenominationCount);
 
     }
 
     public Money minus(Money other) {
         if ( other == null )
             throw new IllegalArgumentException("Cant process null parameter");
-
 
         if ( Double.compare(this.amount(), other.amount()) < 0 )
             throw new IllegalArgumentException(String.format("Can't subtract %s from %s", this.amount(), other.amount()));
@@ -132,5 +135,9 @@ public class Money {
         return Long.hashCode(Double.doubleToLongBits(amount()));
     }
 
+    @Override
+    public int compareTo(Money o) {
+       return Double.compare(o.amount(), amount());
+    }
 }
 
